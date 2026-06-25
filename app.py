@@ -1,56 +1,67 @@
 import streamlit as st
-import yfinance as yf
-import pandas as pd
 
 st.set_page_config(
-    page_title="Heather's AI Trading Dashboard",
+    page_title="MarketPilot AI",
     page_icon="📈",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-st.title("📈 Heather's AI Trading Dashboard")
-st.success("Dashboard is live and analyzing stocks!")
+# ---------- Sidebar ----------
+st.sidebar.title("📈 MarketPilot AI")
 
-tickers = ["NVDA", "AVGO", "MU", "IONQ", "RGTI", "CEG", "FCX", "AMD", "NET"]
+page = st.sidebar.radio(
+    "Navigation",
+    [
+        "Dashboard",
+        "Portfolio",
+        "Opportunity Scanner",
+        "Watchlist",
+        "Research Center",
+        "Trade Journal",
+        "Settings"
+    ]
+)
 
-data = []
+# ---------- Dashboard ----------
+if page == "Dashboard":
 
-for ticker in tickers:
-    stock = yf.Ticker(ticker)
-    info = stock.fast_info
+    st.title("📈 MarketPilot AI")
 
-    last_price = info.get("last_price", 0)
-    day_high = info.get("day_high", 0)
-    day_low = info.get("day_low", 0)
-    previous_close = info.get("previous_close", 0)
+    col1, col2, col3, col4 = st.columns(4)
 
-    if previous_close and last_price:
-        day_change_percent = ((last_price - previous_close) / previous_close) * 100
-    else:
-        day_change_percent = 0
+    col1.metric("Portfolio Value", "$44,183")
+    col2.metric("Today's P/L", "-$487")
+    col3.metric("Cash Available", "$11,127")
+    col4.metric("Portfolio Grade", "A-")
 
-    if day_change_percent <= -3:
-        rating = "🟢 Possible Buy"
-    elif day_change_percent >= 5:
-        rating = "🟠 Consider Trim"
-    else:
-        rating = "🟡 Hold / Watch"
+    st.divider()
 
-    data.append({
-        "Ticker": ticker,
-        "Last Price": round(last_price, 2),
-        "Day Change %": round(day_change_percent, 2),
-        "Day High": round(day_high, 2),
-        "Day Low": round(day_low, 2),
-        "Recommendation": rating
-    })
+    left, right = st.columns([2,1])
 
-df = pd.DataFrame(data)
+    with left:
 
-st.header("Live Watchlist")
-st.dataframe(df, use_container_width=True)
+        st.subheader("Today's Action Center")
 
-st.header("How to read this")
-st.write("🟢 Possible Buy = down 3% or more today")
-st.write("🟡 Hold / Watch = normal movement")
-st.write("🟠 Consider Trim = up 5% or more today")
+        st.info("🟢 Buy Opportunity: MU")
+        st.warning("🟠 Watch: IONQ")
+        st.error("🔴 Risk: RKLB")
+        st.success("✅ Hold: NVDA")
+
+    with right:
+
+        st.subheader("Market Status")
+
+        st.write("S&P 500")
+        st.progress(.62)
+
+        st.write("NASDAQ")
+        st.progress(.73)
+
+        st.write("AI Sector")
+        st.progress(.91)
+
+# ---------- Other Pages ----------
+else:
+    st.title(page)
+    st.write("Coming Soon...")
